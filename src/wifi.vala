@@ -16,6 +16,7 @@
 
 using Gee;
 using Elm;
+using Posix;
 
 namespace iliwi {
   
@@ -353,10 +354,11 @@ namespace iliwi {
                                       "/org/freesmartphone/Usage");
         fso_usage.RequestResource("WiFi"); // Turn on wifi
         fso_usage.RequestResource("CPU");
+//        Posix.sleep(5);
       } catch(Error e) {
         debug("DBus error!");
       }
-      
+      Posix.sleep(5);
       try {
         line_regex_start_address = new Regex(""" Address: ([0-9A-Z:]{17})$""");
         line_regex_essid = new Regex("""^\s+ESSID:\"(.*)\"$""");
