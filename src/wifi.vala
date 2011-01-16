@@ -394,7 +394,7 @@ namespace iliwi {
             
             preferred_networks.set(result.fetch(1), PreferredNetwork() {
               password = result.fetch(2),
-              password_in_ascii = (result.fetch(3)==null), 
+              password_in_ascii = (result.fetch(3)!="h"), 
               username = result.fetch(4),
               cert = result.fetch(5),
               cert_dir = result.fetch(6)
