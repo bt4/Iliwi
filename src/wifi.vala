@@ -16,7 +16,6 @@
 
 using Gee;
 using Elm;
-using Posix;
 
 namespace iliwi {
   
@@ -53,19 +52,19 @@ namespace iliwi {
     }
     public void set_ascii_state(Network network,bool new_state) {
       network.password_in_ascii = new_state;
-      WifiThread.preferred_ascii_password_state_change(network);
+      WifiThread.preferred_state_change(network);
     }
     
     public void preferred_network_password_change(Network network) {
-      WifiThread.preferred_network_password_change(network);
+      WifiThread.preferred_state_change(network);
     }
 
     public void preferred_network_username_change(Network network) {
-      WifiThread.preferred_network_username_change(network);
+      WifiThread.preferred_state_change(network);
     }
 
     public void preferred_network_certificate_change(Network network) {
-      WifiThread.preferred_network_certificate_change(network);
+      WifiThread.preferred_state_change(network);
     }
 
     // Callback from thread
@@ -252,24 +251,6 @@ namespace iliwi {
           preferred_networks.unset(network.address);
       }
     }
-    public static void preferred_ascii_password_state_change(Network network) {
-      if(network.preferred_network)
-        preferred_networks.get(network.address).password_in_ascii = network.password_in_ascii;
-    }
-    public static void preferred_network_password_change(Network network) {
-      if(network.preferred_network)
-        preferred_networks.get(network.address).password = network.password;
-    }
-    public static void preferred_network_username_change(Network network) {
-      if(network.preferred_network)
-        preferred_networks.get(network.address).username = network.username;
-    }
-    public static void preferred_network_certificate_change(Network network) {
-      if(network.preferred_network) {
-        preferred_networks.get(network.address).cert = network.cert;
-        preferred_networks.get(network.address).cert_dir = network.cert_dir;
-      }
-    }
     public static void connect_to_network(Network network) {
       disconnectt();
       wifi.set_new_status("connecting..");
@@ -354,11 +335,9 @@ namespace iliwi {
                                       "/org/freesmartphone/Usage");
         fso_usage.RequestResource("WiFi"); // Turn on wifi
         fso_usage.RequestResource("CPU");
-//        Posix.sleep(5);
       } catch(Error e) {
         debug("DBus error!");
       }
-      Posix.sleep(5);
       try {
         line_regex_start_address = new Regex(""" Address: ([0-9A-Z:]{17})$""");
         line_regex_essid = new Regex("""^\s+ESSID:\"(.*)\"$""");
