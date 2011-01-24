@@ -121,8 +121,8 @@ namespace iliwi {
         info_str = "(enc)";
       else if (encryption && authentication)
         info_str = "(enc+auth)";
-			if (adhoc)
-				info_str = info_str + "~";
+      if (adhoc)
+        info_str = info_str + "~";
       string status_str = "";
       if (status == NetworkStatus.CONNECTING)
         status_str = "CONNECTING ";
@@ -185,7 +185,7 @@ namespace iliwi {
     static Regex line_regex_encryption;
     static Regex line_regex_strength;
     static Regex line_regex_interface;
-		static Regex line_regex_adhoc;
+    static Regex line_regex_adhoc;
     static Regex line_regex_wpa_enc;
     static Regex line_regex_wpa_enc_auth;
     
@@ -267,21 +267,21 @@ namespace iliwi {
         password = "\""+network.password+"\"";
       var stream = FileStream.open(filename, "w");
       stream.puts( "ctrl_interface=/var/run/wpa_supplicant\n" );
-			if( network.adhoc ) {
-				stream.puts("ap_scan=2\n");
-			}
+      if( network.adhoc ) {
+        stream.puts("ap_scan=2\n");
+      }
       stream.puts( "network={\n" );
       stream.puts( "  ssid=\"%s\"\n".printf(network.essid) );
     if( network.encryption )
       if ( network.wpa_encryption && (!network.authentication) ) { // WPA-Personal
         stream.puts("  psk=%s\n".printf(password));
-				if ( network.adhoc ) {
-					stream.puts("  proto=WPA\n");
-					stream.puts("  key_mgmt=WPA-NONE\n");
-					stream.puts("  pairwise=NONE\n");
-					stream.puts("  group=TKIP\n");
-				}
-			}
+        if ( network.adhoc ) {
+          stream.puts("  proto=WPA\n");
+          stream.puts("  key_mgmt=WPA-NONE\n");
+          stream.puts("  pairwise=NONE\n");
+          stream.puts("  group=TKIP\n");
+        }
+      }
       else if ( network.wpa_encryption && network.authentication ) { // WPA-Enterprise
         stream.puts("  password=\"%s\"\n".printf(network.password));
         stream.puts("  key_mgmt=WPA-EAP\n");
@@ -300,9 +300,9 @@ namespace iliwi {
       }
     else
       stream.puts( "  key_mgmt=NONE\n" ); // No encryption
-		if( network.adhoc ) {
-			stream.puts("  mode=1\n");
-		}
+    if( network.adhoc ) {
+      stream.puts("  mode=1\n");
+    }
 		stream.puts( "}\n" );
 		stream.flush();
 		stream = null;
@@ -359,7 +359,7 @@ namespace iliwi {
         line_regex_encryption = new Regex("""^\s+Encryption key:on$""");
         line_regex_strength = new Regex("""^\s+Quality=(\d+)/(\d+) """);
         line_regex_interface = new Regex("""^(\w+\d+)\s*Scan completed :$""");
-				line_regex_adhoc = new Regex("""^\s+Mode:Ad-Hoc$""");
+        line_regex_adhoc = new Regex("""^\s+Mode:Ad-Hoc$""");
         line_regex_wpa_enc = new Regex("""^\s+Extra:(rsn|wpa)_ie=""");
         line_regex_wpa_enc_auth = new Regex("""^\s+Extra:wpa_ie=dd160050f20101000050f20201000050f20201000050f201$""");
       } catch(Error e) {
@@ -445,7 +445,7 @@ namespace iliwi {
           }
           else if( line_regex_wpa_enc.match(line,0,out result) )
             current_network.set_encyption_to_wpa();
-					else if( line_regex_adhoc.match(line,0,out result) )
+          else if( line_regex_adhoc.match(line,0,out result) )
             current_network.adhoc = true;
           else if( line_regex_strength.match(line,0,out result) ) {
             current_network.set_strength( (int)(result.fetch(1).to_double()/result.fetch(2).to_double()*100) );
@@ -534,7 +534,8 @@ WPA/WPA2-mixed
                     Extra:rsn_ie=30180100000fac020200000fac04000fac020100000fac020c00
                     Extra:wmm_ie=dd180050f2020101800003a4000027a4000042435e0062322f00
 
-WPA-Enterprise		  Extra:bcn_int=100
+WPA-Enterprise
+                    Extra:bcn_int=100
                     Extra:wpa_ie=dd160050f20101000050f20201000050f20201000050f201
                     Extra:rsn_ie=30140100000fac020100000fac040100000fac010000
 */
