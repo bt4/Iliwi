@@ -42,21 +42,21 @@ namespace iliwi.View {
     
     //itc.item_style = "double_label";
     itc.item_style = "default";
-    itc.func.label_get = genlist_get_label;
-    itc.func.icon_get = null;
+    itc.func.text_get = genlist_get_label;
+    itc.func.content_get = null;
     itc.func.state_get = null;
     itc.func.del = null;
 
     itc2.item_style = "default";
-    itc2.func.label_get = certlist_get_label;
-    itc2.func.icon_get = null;
+    itc2.func.text_get = certlist_get_label;
+    itc2.func.content_get = null;
     itc2.func.state_get = null;
     itc2.func.del = null;
     
     generate_window();
     
     wifi.status_change.connect((t) => {
-      status.label_set(wifi.status);
+      status.text_set(wifi.status);
     });
     wifi.network_list_change.connect((t) => {
       button.disabled_set(false);
@@ -91,7 +91,7 @@ namespace iliwi.View {
     frontpage = new Box(win);
     frontpage.size_hint_weight_set(1, 1);
     frontpage.size_hint_align_set(-1, -1);
-    frontpage.homogenous_set(false);
+    frontpage.homogeneous_set(false);
     frontpage.show();
     
     wifilist = new Genlist(win);
@@ -103,7 +103,7 @@ namespace iliwi.View {
     
     Box box = new Box(win);
     box.horizontal_set(true);
-    box.homogenous_set(false);
+    box.homogeneous_set(false);
     box.size_hint_weight_set(1,-1);
     box.size_hint_align_set(-1, -1);
     box.show();
@@ -111,12 +111,12 @@ namespace iliwi.View {
     status = new Label(win);
     status.size_hint_weight_set(0, 0);
     status.size_hint_align_set(0.5, 0.5);
-    status.label_set(wifi.status);
+    status.text_set(wifi.status);
     status.show();
     box.pack_end(status);
     
     button = new Button(win);
-    button.label_set("Refresh list");
+    button.text_set("Refresh list");
     button.disabled_set(true);
     button.show();
     button.smart_callback_add("clicked", refresh_list_elements );
@@ -143,7 +143,7 @@ namespace iliwi.View {
     foreach(Network network in wifi.get_visible_networks()) {
       // Find place (sorted by preferred > strength
       if( items_in_list == false )
-        network.listitem = wifilist.item_append( itc, (void*)network, null, Elm.GenlistItemFlags.NONE, item_select );
+        network.listitem = wifilist.item_append( ref itc, (void*)network, null, Elm.GenlistItemFlags.NONE, item_select );
       else {
         listitem_tmp = wifilist.first_item_get();
         Network list_network = (Network) listitem_tmp.data_get();
@@ -151,16 +151,16 @@ namespace iliwi.View {
         while(found_place == false) {
           if( network.preferred_network && list_network.preferred_network==false ) {
             found_place = true;
-            network.listitem = wifilist.item_insert_before( itc, (void*)network, null, listitem_tmp, Elm.GenlistItemFlags.NONE, item_select );
+            network.listitem = wifilist.item_insert_before( ref itc, (void*)network, null, listitem_tmp, Elm.GenlistItemFlags.NONE, item_select );
           } else if( list_network.preferred_network==network.preferred_network && list_network.strength<=network.strength ) {
             found_place = true;
-            network.listitem = wifilist.item_insert_before( itc, (void*)network, null, listitem_tmp, Elm.GenlistItemFlags.NONE, item_select );
+            network.listitem = wifilist.item_insert_before( ref itc, (void*)network, null, listitem_tmp, Elm.GenlistItemFlags.NONE, item_select );
           } else { // Couldn't find a place to put it
             listitem_tmp2 = listitem_tmp.next_get();
             listitem_tmp = listitem_tmp2;
             if( listitem_tmp==null ) {
               found_place = true;
-              network.listitem = wifilist.item_append( itc, (void*)network, null, Elm.GenlistItemFlags.NONE, item_select );
+              network.listitem = wifilist.item_append( ref itc, (void*)network, null, Elm.GenlistItemFlags.NONE, item_select );
             } else
               list_network = (Network) listitem_tmp.data_get();
           }
@@ -182,7 +182,7 @@ namespace iliwi.View {
     network = _network; 
 
     Box outer_box = new Box(win);
-    outer_box.homogenous_set(false);
+    outer_box.homogeneous_set(false);
     outer_box.size_hint_weight_set(1, 1);
     outer_box.size_hint_align_set(-1, -1);
     outer_box.show();
@@ -196,7 +196,7 @@ namespace iliwi.View {
     sc.show();
 
     Box network_page = new Box(win);
-    network_page.homogenous_set(false);
+    network_page.homogeneous_set(false);
     network_page.size_hint_weight_set(1, 1);
     network_page.size_hint_align_set(-1, -1);
     sc.content_set(network_page);
@@ -212,7 +212,7 @@ namespace iliwi.View {
     title.size_hint_weight_set(1, 1);
     title.size_hint_align_set(0.5, 0.5);
     title.scale_set(2);
-    title.label_set(network.get_title());
+    title.text_set(network.get_title());
     title.show();
     title_padding.content_set(title);
     gui_container2 += (owned) title;
@@ -222,7 +222,7 @@ namespace iliwi.View {
 
     if(network.authentication) {
       Frame username_container = new Frame(win);
-      username_container.label_set("Username");
+      username_container.text_set("Username");
       username_container.size_hint_weight_set(1, -1);
       username_container.size_hint_align_set(-1, -1);
       username = new Entry(win);
@@ -237,7 +237,7 @@ namespace iliwi.View {
 
     if(network.encryption) {
       Frame password_container = new Frame(win);
-      password_container.label_set("Password");
+      password_container.text_set("Password");
       password_container.size_hint_weight_set(1, -1);
       password_container.size_hint_align_set(-1, -1);
       password = new Entry(win);
@@ -251,7 +251,7 @@ namespace iliwi.View {
       
       if(!network.authentication) {
         Toggle ascii_hex = new Toggle(win);
-        ascii_hex.label_set("Password format");
+        ascii_hex.text_set("Password format");
         ascii_hex.states_labels_set("ASCII","Hex");
         ascii_hex.smart_callback_add("changed", change_network_ascii_hex );
         ascii_hex.state_set(network.password_in_ascii);
@@ -263,13 +263,13 @@ namespace iliwi.View {
 
     if(network.authentication) {
       Frame certificate_container = new Frame(win);
-      certificate_container.label_set("Server Certificate");
+      certificate_container.text_set("Server Certificate");
       certificate_container.size_hint_weight_set(1, -1);
       certificate_container.size_hint_align_set(-1, -1);
       certificate_container.show();
  
       Box cert_box = new Box(win);
-      cert_box.homogenous_set(false);
+      cert_box.homogeneous_set(false);
       cert_box.size_hint_weight_set(1,-1);
       cert_box.size_hint_align_set(-1, -1);
       cert_box.show();
@@ -284,7 +284,7 @@ namespace iliwi.View {
 
       Box cert_button_box = new Box(win);
       cert_button_box.horizontal_set(true);
-      cert_button_box.homogenous_set(false);
+      cert_button_box.homogeneous_set(false);
       cert_button_box.size_hint_weight_set(1, -1);
       cert_button_box.size_hint_align_set(-1, -1);
       cert_button_box.show();
@@ -292,7 +292,7 @@ namespace iliwi.View {
       Button cert_add_button = new Button(win);
       cert_add_button.size_hint_weight_set(1, 1);
       cert_add_button.size_hint_align_set(-1, -1);
-      cert_add_button.label_set("Select");
+      cert_add_button.text_set("Select");
       cert_add_button.show();
       cert_button_box.pack_end(cert_add_button);
       cert_add_button.smart_callback_add("clicked", show_cert_chooser);
@@ -301,7 +301,7 @@ namespace iliwi.View {
       Button cert_del_button = new Button(win);
       cert_del_button.size_hint_weight_set(1, 1);
       cert_del_button.size_hint_align_set(-1, -1);
-      cert_del_button.label_set("Clear");
+      cert_del_button.text_set("Clear");
       cert_del_button.show();
       cert_button_box.pack_end(cert_del_button);
       cert_del_button.smart_callback_add("clicked", clear_cert);
@@ -317,7 +317,7 @@ namespace iliwi.View {
 
     Toggle preferred = new Toggle(win);
     preferred.smart_callback_add("changed", change_network_preferred );
-    preferred.label_set( "Preferred network");
+    preferred.text_set( "Preferred network");
     preferred.states_labels_set("Yes","No");
     preferred.state_set(network.preferred_network);
     preferred.show();
@@ -327,7 +327,7 @@ namespace iliwi.View {
     Button button = new Button(win);
     button.size_hint_weight_set(1,-1);
     button.size_hint_align_set(-1,-1);
-    button.label_set("Connect");
+    button.text_set("Connect");
     button.disabled_set(network.status!=NetworkStatus.UNCONNECTED);
     button.show();
     button.smart_callback_add("clicked", connect_to );
@@ -337,7 +337,7 @@ namespace iliwi.View {
     button = new Button(win);
     button.size_hint_weight_set(1,-1);
     button.size_hint_align_set(-1,-1);
-    button.label_set("Back");
+    button.text_set("Back");
     button.show();
     button.smart_callback_add("clicked", back_to_list );
     network_page.pack_end(button);
@@ -388,7 +388,7 @@ namespace iliwi.View {
     Box cert_chooser_page = new Box(win);
     cert_chooser_page.size_hint_weight_set(1, 1);
     cert_chooser_page.size_hint_align_set(-1, -1);
-    cert_chooser_page.homogenous_set(false);
+    cert_chooser_page.homogeneous_set(false);
     cert_chooser_page.show();
     
     Genlist certlist = new Genlist(win);
@@ -396,7 +396,7 @@ namespace iliwi.View {
     certlist.size_hint_align_set(-1, -1);
     list_cert_dir();
     foreach (Certificate cert in ls) {
-      cert.listitem = certlist.item_append(itc2, (void*)cert, null, Elm.GenlistItemFlags.NONE, cert_select);
+      cert.listitem = certlist.item_append( ref itc2, (void*)cert, null, Elm.GenlistItemFlags.NONE, cert_select);
     }
     certlist.show();
     cert_chooser_page.pack_end(certlist);
@@ -404,7 +404,7 @@ namespace iliwi.View {
     Button back_button = new Button(win);
     back_button.size_hint_weight_set(1,-1);
     back_button.size_hint_align_set(-1,-1);
-    back_button.label_set("Back");
+    back_button.text_set("Back");
     back_button.show();
     back_button.smart_callback_add("clicked", back_to_net_definition);
     cert_chooser_page.pack_end(back_button);
@@ -460,10 +460,10 @@ namespace iliwi.View {
   }
   private void certlist_label_set() {
       if (network.cert != "") {
-         cert_status.label_set(Certificate.trim_cert_name(network.cert));
+         cert_status.text_set(Certificate.trim_cert_name(network.cert));
       }
       else {
-         cert_status.label_set("Not Set - Password recipient unverified!");
+         cert_status.text_set("Not Set - Password recipient unverified!");
       }
   }
   private void list_cert_dir() {
